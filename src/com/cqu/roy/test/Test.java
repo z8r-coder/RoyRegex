@@ -8,7 +8,7 @@ public class Test {
 		// TODO Auto-generated method stub
 
 		Nfa nfa = test_case();
-		System.out.println(nfa.match("b"));
+		System.out.println(nfa.match_("wb"));
 		
 	}
 	
@@ -30,9 +30,11 @@ public class Test {
 		nfa2.addNodeToNfa("end");
 		nfa2.addEnd("end");
 		
-		nfa2.getStart().addMoveState('b', nfa2.getNode("b"));
+		nfa2.getStart().addMoveState('b', nfa2.getNode("end"));
 		
-		nfa1.and(nfa2);
+		nfa1.connect(nfa2);
+		//nfa1.and(nfa2);
+		//nfa1.closure_3();
 		return nfa1;
 	}
 }

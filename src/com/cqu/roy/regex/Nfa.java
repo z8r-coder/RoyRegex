@@ -2,6 +2,9 @@ package com.cqu.roy.regex;
 
 import java.util.ArrayList;
 
+import com.cqu.roy.exception.EndNodeException;
+import com.cqu.roy.exception.StartNodeException;
+
 /*@author royruan
  * @date 2017/3/18
  * */
@@ -104,6 +107,14 @@ public class Nfa {
 		node_end.addMoveState('\0', new_end);
 
 		updateState();
+		
+		try {
+			checkStartNode();
+			checkEndNode();
+		} catch (StartNodeException | EndNodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -132,6 +143,14 @@ public class Nfa {
 		node_end.addMoveState('\0', node_start);
 
 		updateState();
+		
+		try {
+			checkEndNode();
+			checkStartNode();
+		} catch (EndNodeException | StartNodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -160,6 +179,14 @@ public class Nfa {
 		node_End.addMoveState('\0', new_End);
 
 		updateState();
+		
+		try {
+			checkStartNode();
+			checkEndNode();
+		} catch (StartNodeException | EndNodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -185,6 +212,15 @@ public class Nfa {
 
 		for (NfaNode node : nfa_tmp.getNfaSet()) {
 			nfa.add(node);
+		}
+		updateState();
+		
+		try {
+			checkStartNode();
+			checkEndNode();
+		} catch (StartNodeException | EndNodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -225,6 +261,14 @@ public class Nfa {
 		}
 		new_nfa.updateState();
 		nfa = new_nfa.getNfaSet();// 刷新当前nfa
+		//改变了start结点和end结点后，check
+		try {
+			checkStartNode();
+			checkEndNode();
+		} catch (StartNodeException | EndNodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public NfaNode getNode(String state) {
@@ -248,16 +292,19 @@ public class Nfa {
 
 		ArrayList<NfaNode> res_set = new ArrayList<>();
 		for (int i = 0; i < target.length(); i++) {
-			for (NfaNode node : nodeSet) {
-				dfs(node, res_set, target.charAt(i));
-			}
-			nodeSet = new ArrayList<>(res_set);
+			//状态转移
+			nodeSet = moveState(nodeSet, target.charAt(i));
 			// 消除含有'\0'的边
 			ArrayList<NfaNode> arr = new ArrayList<>();
 			for (NfaNode node : nodeSet) {
 				dfs(node, arr, '\0');
 			}
 			nodeSet = new ArrayList<>(arr);
+			for (NfaNode node : nodeSet) {
+				if (node.end) {
+					return true;
+				}
+			}
 		}
 		ArrayList<NfaNode> tmp_nn = (ArrayList<NfaNode>) nodeSet.clone();
 		nodeSet.clear();
@@ -272,7 +319,7 @@ public class Nfa {
 		}
 		return false;
 	}
-
+	//深搜消除'\0'边
 	private void dfs(NfaNode node, ArrayList<NfaNode> nodeSet, char c) {
 		if (node == null) {
 			return;
@@ -286,8 +333,50 @@ public class Nfa {
 			dfs(node2, nodeSet, c);
 		}
 	}
+	
+	private ArrayList<NfaNode> moveState(ArrayList<NfaNode> nodeSet, char c){
+		ArrayList<NfaNode> arr = new ArrayList<>();
+		for(NfaNode node : nodeSet){
+			ArrayList<NfaNode> tmp = node.getStateTable().get(c);
+			if (tmp == null) {
+				//若没有与c匹配的字符，则将start结点add，但保证集合中只有一个start结点
+				if (!arr.contains(getStart())) {
+					arr.add(getStart());
+				}
+			}else {
+				for(NfaNode node2 : tmp){
+					arr.add(node2);
+				}
+			}
+		}
+		return arr;
+	}
 
 	public int size() {
 		return nfa.size();
+	}
+	
+	private void checkStartNode() throws StartNodeException{
+		int count = 0;
+		for(NfaNode node : nfa){
+			if (node.start) {
+				count++;
+				if (count >= 2) {
+					throw new StartNodeException(getClass().toString());
+				}
+			}
+		}
+	}
+	
+	private void checkEndNode() throws EndNodeException{
+		int count = 0;
+		for(NfaNode node : nfa){
+			if (node.end) {
+				count++;
+				if (count >= 2) {
+					throw new EndNodeException(getClass().toString());
+				}
+			}
+		}
 	}
 }

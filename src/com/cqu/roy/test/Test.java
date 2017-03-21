@@ -1,5 +1,8 @@
 package com.cqu.roy.test;
 
+import com.cqu.roy.exception.StartNodeException;
+import com.cqu.roy.exception.UncertainException;
+import com.cqu.roy.regex.DfaNode;
 import com.cqu.roy.regex.Nfa;
 
 public class Test {
@@ -8,7 +11,7 @@ public class Test {
 		// TODO Auto-generated method stub
 
 		Nfa nfa = test_case();
-		System.out.println(nfa.match_("wb"));
+		System.out.println(nfa.match_("ab"));
 		
 	}
 	
@@ -33,7 +36,7 @@ public class Test {
 		nfa2.getStart().addMoveState('b', nfa2.getNode("end"));
 		
 		nfa1.connect(nfa2);
-		//nfa1.and(nfa2);
+//		nfa1.and(nfa2);
 		//nfa1.closure_3();
 		return nfa1;
 	}

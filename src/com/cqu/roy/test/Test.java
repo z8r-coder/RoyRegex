@@ -37,7 +37,7 @@ public class Test {
 		
 		nfa1.connect(nfa2);
 //		nfa1.and(nfa2);
-		//nfa1.closure_3();
+		nfa1.closure_2();
 		return nfa1;
 	}
 }

@@ -1,13 +1,17 @@
 package com.cqu.roy.regex;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.cqu.roy.exception.EndNodeException;
 import com.cqu.roy.exception.StartNodeException;
 
-/*@author royruan
- * @date 2017/3/18
- * */
+/**
+ * 正则表现的nfa仅有一个end结点和一个start结点
+ * @author Roy
+ * @date: 2017年3月22日  下午3:48:25
+ * version:1.0
+ */
 public class Nfa {
 	private ArrayList<NfaNode> nfa;
 
@@ -319,7 +323,7 @@ public class Nfa {
 		}
 		return false;
 	}
-	//深搜消除'\0'边
+	//该深搜主要用于消除'\0'边
 	private void dfs(NfaNode node, ArrayList<NfaNode> nodeSet, char c) {
 		if (node == null) {
 			return;
@@ -328,6 +332,11 @@ public class Nfa {
 		if (nn == null) {
 			nodeSet.add(node);
 			return;
+		}
+		//可能出现一条边为'\0'而另一条边为'char'，则该结点也应该加入集合。接收输入
+		HashMap<Character, ArrayList<NfaNode>> hm = node.getStateTable();
+		if (hm.keySet().size() >= 2) {
+			nodeSet.add(node);
 		}
 		for (NfaNode node2 : nn) {
 			dfs(node2, nodeSet, c);

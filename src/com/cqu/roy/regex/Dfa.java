@@ -54,13 +54,27 @@ public class Dfa {
 		dfaStartNode.checkEnd();
 		dfa.add(dfaStartNode);//将第一个dfanode放入集合
 		
-		HashSet<Character> charCache = new HashSet<>();//将需要的字符缓存起来，并设置不可重复
-		for(NfaNode node : nfaNodesSet){
-			HashMap<Character, ArrayList<NfaNode>> stateMoveTable = node.getStateTable();
-			for(Character c : stateMoveTable.keySet()){
-				charCache.add(c);
+		while (true) {
+			//每一个dfanode中所包含的nfanode集合
+			ArrayList<NfaNode> arr = new ArrayList<>();
+			HashSet<Character> charCache = new HashSet<>();// 将需要的字符缓存起来，并设置不可重复
+			for (NfaNode node : nfaNodesSet) {
+				HashMap<Character, ArrayList<NfaNode>> stateMoveTable = node.getStateTable();
+				for (Character c : stateMoveTable.keySet()) {
+					charCache.add(c);
+				}
 			}
-		}
+			for (NfaNode node : nfaNodesSet) {
+				for (Character c : charCache) {
+					HashMap<Character, ArrayList<NfaNode>> hm = node.getStateTable();
+					if (hm.get(c) != null) {
+						ArrayList<NfaNode> nn = hm.get(c);
+						
+					}
+				}
+			}
+		}	
+
 	}
 	
 	public void dfs(char c,NfaNode node,ArrayList<NfaNode> nfaNodeSet) {

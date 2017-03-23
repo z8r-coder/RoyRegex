@@ -25,8 +25,16 @@ public class DfaNode {
 		start = false;
 		end = false;
 	}
-	
+	/**
+	 * 状态转移表添加input 字符和转移后状态结点
+	 * @param c
+	 * @param node
+	 * @throws UncertainException
+	 */
 	public void addMoveTable (Character c, DfaNode node) throws UncertainException {
+		/**
+		 * 防止一条边出现多个对应状态，dfa每个结点的一个输入只应该对应一条边
+		 */
 		if (stateMoveTable.get(c) != null) {
 				throw new UncertainException(getClass().toString());
 		}
@@ -47,5 +55,9 @@ public class DfaNode {
 	
 	public ArrayList<NfaNode> getNfaNodesSet() {
 		return nfaNodes;
+	}
+	
+	public void setNfaNodesSet(ArrayList<NfaNode> nodes) {
+		this.nfaNodes = nodes;
 	}
 }

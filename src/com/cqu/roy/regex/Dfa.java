@@ -29,14 +29,17 @@ public class Dfa {
 		}
 		return null;
 	}
-
-	public DfaNode getEnd() {
+	/**
+	 * 由于dfa可能不止一个终止结点，所以返回一个终止结点的集合
+	 */
+	public ArrayList<DfaNode> getEnd() {
+		ArrayList<DfaNode> dfaEndSet = new ArrayList<>();
 		for (DfaNode node : dfa) {
 			if (node.end) {
-				return node;
+				dfaEndSet.add(node);
 			}
 		}
-		return null;
+		return dfaEndSet;
 	}
 
 	public void addNodeToNfa(DfaNode node) {
@@ -90,7 +93,8 @@ public class Dfa {
 	 * @param nfaNodesSet 当前能接受input的nfa结点的状态的集合
 	 * @param dfaNode     当前dfaNode,传递来以便建立边
 	 */
-	public void SubsetConstruction(ArrayList<NfaNode> nfaNodesSet, DfaNode dfaNode) {
+	public void SubsetConstruction(ArrayList<NfaNode> nfaNodesSet,
+			DfaNode dfaNode) {
 		/**
 		 * 将需要的字符缓存起来
 		 */
@@ -106,9 +110,15 @@ public class Dfa {
 				}
 			}
 		}
-
+		
 		/**
-		 * 这个地方应该可以优化 nn用来存字符转移后的ndoe，
+		 * 如果set容器中缓存量为0，则说明不存在结点有边了，终止
+		 */
+		if (charCache.size() == 0) {
+			return;
+		}
+		/**
+		 * 这个地方应该可以优化 nn用来存字符转移后的node，
 		 * 以便后来进行'\0'深搜，同样会处于相同的集合
 		 */
 		ArrayList<NfaNode> nn = new ArrayList<>();
@@ -133,6 +143,7 @@ public class Dfa {
 			 */
 			DfaNode dNode = new DfaNode();
 			dNode.setNfaNodesSet(arr);
+			dNode.checkEnd();
 			/**
 			 * 设置边关系
 			 */
@@ -142,6 +153,17 @@ public class Dfa {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			/**
+			 * 下一次开始的结点集合
+			 */
+			ArrayList<NfaNode> noo = new ArrayList<>();
+					
+			for(NfaNode node : nfaNodesSet){
+				dfsInput('\0', node, noo);
+			}
+			
+			SubsetConstruction(noo, dfaNode);
 		}
 	}
 	
@@ -149,7 +171,7 @@ public class Dfa {
 	 *
 	 * 该深搜是用来获得dfa的状态子集结点
 	 */
-	public void dfsState(char c, NfaNode node, ArrayList<NfaNode> nfaNodeSet) {
+	private void dfsState(char c, NfaNode node, ArrayList<NfaNode> nfaNodeSet) {
 		if (node == null) {
 			return;
 		}
@@ -170,7 +192,7 @@ public class Dfa {
 	 * @param c的值一般为'\0'
 	 */
 	
-	public void dfsInput(char c, NfaNode node,ArrayList<NfaNode> inputNodes) {
+	private void dfsInput(char c, NfaNode node,ArrayList<NfaNode> inputNodes) {
 		if (node == null) {
 			return;
 		}
@@ -193,5 +215,12 @@ public class Dfa {
 		for(NfaNode node2 : inputNodes){
 			dfsInput(c, node2, inputNodes);
 		}
+	}
+	/**
+	 * 使用dfa状态图匹配字符串
+	 * @param s
+	 */
+	public void match(String s) {
+		
 	}
 }

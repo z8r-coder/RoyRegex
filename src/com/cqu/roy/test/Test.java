@@ -1,8 +1,6 @@
 package com.cqu.roy.test;
 
-import com.cqu.roy.exception.StartNodeException;
-import com.cqu.roy.exception.UncertainException;
-import com.cqu.roy.regex.DfaNode;
+import com.cqu.roy.regex.Dfa;
 import com.cqu.roy.regex.Nfa;
 
 public class Test {
@@ -11,8 +9,9 @@ public class Test {
 		// TODO Auto-generated method stub
 
 		Nfa nfa = test_case();
+		Dfa dfa = new Dfa(nfa);
 		System.out.println(nfa.match_("ab"));
-		
+		dfa.generaterDfa();
 	}
 	
 	/*test a|b

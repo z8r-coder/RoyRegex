@@ -26,6 +26,17 @@ public class DfaNode {
 		end = false;
 	}
 	/**
+	 * 拷贝构造函数
+	 * @param node
+	 */
+	public DfaNode(DfaNode node){
+		this.state = node.state;
+		this.stateMoveTable = node.stateMoveTable;
+		this.start = node.start;
+		this.end = node.end;
+		this.nfaNodes = node.nfaNodes;
+	}
+	/**
 	 * 状态转移表添加input 字符和转移后状态结点
 	 * @param c
 	 * @param node

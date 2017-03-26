@@ -216,11 +216,31 @@ public class Dfa {
 			dfsInput(c, node2, inputNodes);
 		}
 	}
+	
 	/**
 	 * 使用dfa状态图匹配字符串
 	 * @param s
 	 */
-	public void match(String s) {
-		
+	public boolean match(String s) {
+		DfaNode tmpNode = new DfaNode(getStart());
+		for(int i = 0; i < s.length();i++){
+			HashMap<Character, DfaNode> moveStateTable = tmpNode.getMoveTable();
+			/**
+			 * 存在路径，进行结点转移
+			 * 不存在路径，结点归startNode
+			 */
+			if (moveStateTable.get(s.charAt(i)) != null) {
+				tmpNode = moveStateTable.get(s.charAt(i));
+			}else {
+				tmpNode = getStart();
+			}
+		}
+		/**
+		 *判断是否是终止结点
+		 */
+		if (tmpNode.end) {
+			return true;
+		}
+		return false;
 	}
 }

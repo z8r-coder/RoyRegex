@@ -18,6 +18,13 @@ public class Token {
 		this.c = c;
 		this.symbol = symbol;
 		this.cc = cc;
+		//Ö÷ÒªÅÂÊÖÎó
+		try {
+			check();
+		} catch (SymbolCollision e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void check() throws SymbolCollision{
@@ -26,4 +33,7 @@ public class Token {
 		}
 	}
 	
+	public char getCharacter() {
+		return c;
+	}	
 }

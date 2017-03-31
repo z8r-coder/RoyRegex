@@ -72,9 +72,7 @@ public class Lexer {
 							//弹出')'
 							symbolStack.pop();
 						}
-					}
-					
-					
+					}		
 				}else {
 					//括号匹配异常
 					throw new BracketsNotMatchedException(getClass().toString());
@@ -99,18 +97,50 @@ public class Lexer {
 						newTree.setRootNode(node);
 						//压入新生成的结点栈
 						astNodeStack.push(newTree);
+						//再向符号栈中压入|
+						ASTNode andNode = new ASTNode(new Token('|', true, false)
+								, null, null);
+						symbolStack.push(andNode);
 					}
-				}else if (c == '*' || c == '+' || c == '?') {
-					
 				}
-				
-			}else if (message.charAt(i) == '*') {
-				
-			}else {
+				else if (c == '(') {
+					//若栈中只有(则直接压入|就行了
+					ASTNode node2 = new ASTNode(new Token('|', true, false)
+							, null, null);
+					symbolStack.push(node2);
+				}
+			}else if (message.charAt(i) == '*' || message.charAt(i) == '+' 
+					|| message.charAt(i) == '?') {
+				//这三个符号为优先级最高，所以不用进栈，直接弹出
+				//结构如   *
+				//       |
+				//       N
+				if (astNodeStack.size() == 0) {
+					throw new NodeExistException(getClass().toString());
+				}
+				ASTNode charNode = astNodeStack.pop();
+				ASTNode symbolNode = new ASTNode(new Token(message.charAt(i), true, false), charNode, null);
+				//将整颗树包装成一个node结点
+				ASTNode newTree = new ASTNode(null, null, null);
+				newTree.setRootNode(symbolNode);
+				//压入结点栈
+				astNodeStack.push(newTree);
+			}	
+			else {
+				//字符[a-zA-Z0-9]若ab连接，中间需要添加$
 				ASTNode astNode = new ASTNode(new Token(message.charAt(i), false, true)
 						, null, null);
+				//第i个元素是字符，判断第i + 1个元素是不是字符
 				astNodeStack.push(astNode);
 			}
 		}
+		//栈中有可能剩余元素
+	}
+	//获得整颗被包裹在ASTNode中的树
+	public ASTNode getTree() throws NodeExistException{
+		if (astNodeStack.size() != 1 || symbolStack.size() != 0) {
+			throw new NodeExistException(getClass().toString());
+		}
+		return astNodeStack.pop();
 	}
 }

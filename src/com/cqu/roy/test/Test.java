@@ -1,6 +1,7 @@
 package com.cqu.roy.test;
 
 import com.cqu.roy.regex.Dfa;
+import com.cqu.roy.regex.Lexer;
 import com.cqu.roy.regex.Nfa;
 
 public class Test {
@@ -8,10 +9,12 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		Nfa nfa = test_case();
-		Dfa dfa = new Dfa(nfa);
-		System.out.println(nfa.match_("ab"));
-		dfa.generaterDfa();
+//		Nfa nfa = test_case();
+//		Dfa dfa = new Dfa(nfa);
+//		System.out.println(nfa.match_("ab"));
+//		dfa.generaterDfa();
+		Lexer lexer = new Lexer("(a)");
+		lexer.resolveAST();
 	}
 	
 	/*test a|b

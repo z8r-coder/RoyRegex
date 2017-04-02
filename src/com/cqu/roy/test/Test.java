@@ -13,7 +13,7 @@ public class Test {
 //		Dfa dfa = new Dfa(nfa);
 //		System.out.println(nfa.match_("ab"));
 //		dfa.generaterDfa();
-		Lexer lexer = new Lexer("(a)");
+		Lexer lexer = new Lexer("a*b|a*");
 		lexer.resolveAST();
 	}
 	

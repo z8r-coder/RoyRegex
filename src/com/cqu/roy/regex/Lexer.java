@@ -56,11 +56,11 @@ public class Lexer {
 		if (root == null) {
 			return;
 		}
-		if (root.getLeftChild().getRootNode() != null) {
+		if (root.getLeftChild() != null && root.getLeftChild().getRootNode() != null) {
 			root.setLeftChild(root.getLeftChild().getRootNode());
 			TreeOpen(root.getLeftChild());
 		}
-		if (root.getRightChild().getRootNode() != null) {
+		if (root.getRightChild() != null && root.getRightChild().getRootNode() != null) {
 			root.setRightChild(root.getRightChild().getRootNode());
 			TreeOpen(root.getRightChild());
 		}
@@ -105,22 +105,26 @@ public class Lexer {
 					 * (N)
 					 * (N-M)-代表二元运算符
 					 */
-					ASTNode astNode = symbolStack.pop();
-					Character c = astNode.getToken().getCharacter();
+					//System.out.println(symbolStack.size());
+					ASTNode symNode = symbolStack.pop();
+					Character c = symNode.getToken().getCharacter();
 					if (c == '(') {
 						//表明()或(N)两种情况，这两种情况都不用做操作
 					}else {
 						//c != (  
 						//(N-M)情况
-						//符号打包成结点
-						ASTNode an = new ASTNode(new Token(c, true, false), null, null);
+
 						//M和N打包成结点
-						if (astNodeStack.size() <= 2) {
+						if (astNodeStack.size() < 2) {
 							throw new NodeExistException(getClass().toString());
 						}else {
+							
 							while(c != '('){
 								ASTNode leftNode = astNodeStack.pop();
 								ASTNode rightNode = astNodeStack.pop();
+								//符号打包成结点
+								ASTNode an = new ASTNode(new Token(c, 
+										true, false), null, null);
 								//包裹结点
 								ASTNode newTree = PackASTNode(an, leftNode, rightNode);
 								//然后将新生成的节点树压入
@@ -145,7 +149,7 @@ public class Lexer {
 					continue;
 				}
 				//压入栈时需要比较优先级
-				ASTNode node = symbolStack.pop();
+				ASTNode node = symbolStack.pop();//由于这个操作，若node是'('，后面需要再将该结点压栈
 				char c = node.getToken().getCharacter();
 				if (c == '|' || c == '$') {
 					//说明M|N或MN后又遇到了|，此时需要先构建M|N或MN的语法树
@@ -167,6 +171,10 @@ public class Lexer {
 					//若栈中只有(则直接压入|就行了
 					ASTNode node2 = new ASTNode(new Token(message.charAt(i)
 							, true, false), null, null);
+					ASTNode leftBra = new ASTNode(new Token('(',
+							true, false), null, null);
+					//将'('压栈
+					symbolStack.push(leftBra);
 					symbolStack.push(node2);
 				}else {
 					throw new NodeExistException(getClass().toString());
@@ -184,7 +192,7 @@ public class Lexer {
 				char c = symNode.getToken().getCharacter();
 				if (c == '$') {
 					//栈中存在的是$,因为$是二元操作符，栈中不可能少于2个元素
-					if (astNodeStack.size() <= 2) {
+					if (astNodeStack.size() < 2) {
 						throw new NodeExistException(getClass().toString());
 					}
 					//将栈中存在的$构建为M$N的语法树
@@ -204,6 +212,17 @@ public class Lexer {
 					//若只存在左括号，也是直接打包压入就OK了
 					ASTNode sNode = new ASTNode(new Token(message.charAt(i)
 							, true, false), null, null);
+					if (c == '(') {
+						//由于'('被弹出来了，还要重新压回去
+						ASTNode leftBra = new ASTNode(new Token('(', true, false),
+								null, null);
+						symbolStack.push(leftBra);
+					}else {
+						//由于'|'被弹出来了，需要重新压回去
+						ASTNode and = new ASTNode(new Token('|', true, false),
+								null, null);
+						symbolStack.push(and);
+					}
 					symbolStack.push(sNode);
 				}else {
 					throw new NodeExistException(getClass().toString());
@@ -243,6 +262,7 @@ public class Lexer {
 					e.printStackTrace();
 				}
 				astNodeStack.push(astNode);
+				
 			}
 		}
 		//栈中有可能剩余元素,由于*?+三个符号根本不会进栈，
@@ -278,7 +298,7 @@ public class Lexer {
 	 */
 	public int getState(char c) throws UncertainException{
 		String charSeq = "123456789qwertyuiopasdfghjklzxcvbnm";
-		String symbolSeq = "$*?+|";
+		String symbolSeq = "$*?+|()";
 		for(int i = 0; i < charSeq.length();i++){
 			if (charSeq.charAt(i) == c) {
 				return CHARSTATE;

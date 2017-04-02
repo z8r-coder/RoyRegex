@@ -8,6 +8,7 @@ package com.cqu.roy.regex;
  */
 public class Re {
 	private String regex;
+	private ASTNode node;
 	public Re() {
 		// TODO Auto-generated constructor stub
 	}
@@ -19,17 +20,17 @@ public class Re {
 	 * 非传参编译
 	 */
 	public void compile() {
-		
+		com(this.regex);
 	}
 	/**
 	 * 传参编译
 	 * @param re
 	 */
 	public void compile(String re) {
-		
+		com(re);
 	}
-	public boolean match() {
-		return true;
+	public boolean match(String target) {
+		return node.getNfa().match_(target);
 	}
 	/**
 	 * 辅助编译
@@ -39,9 +40,26 @@ public class Re {
 		Parser parser = new Parser(message);
 		//解析字符串，得到语法分析树
 		ASTNode root = parser.resolveAST();
+		generateNFA(root);
+		node = root;
 	}
 	
-	private void generateNFA(){
-		
+	private void generateNFA(ASTNode root){
+		if (root == null) {
+			return;
+		}
+		generateNFA(root.getLeftChild());
+		generateNFA(root.getRightChild());
+		if (!root.getIsLeaf()) {
+			if (root.getToken().getCharacter() == '$') {
+				Nfa nfa = root.getLeftChild().getNfa();
+				nfa.connect(root.getRightChild().getNfa());
+				root.setNfa(nfa);
+			}else if (root.getToken().getCharacter() == '|') {
+				Nfa nfa = root.getLeftChild().getNfa();
+				nfa.and(root.getRightChild().getNfa());
+				root.setNfa(nfa);
+			}
+		}
 	}
 }

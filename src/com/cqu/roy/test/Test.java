@@ -2,6 +2,7 @@ package com.cqu.roy.test;
 
 import com.cqu.roy.regex.Dfa;
 import com.cqu.roy.regex.Parser;
+import com.cqu.roy.regex.Re;
 import com.cqu.roy.regex.Nfa;
 
 public class Test {
@@ -13,8 +14,11 @@ public class Test {
 //		Dfa dfa = new Dfa(nfa);
 //		System.out.println(nfa.match_("ab"));
 //		dfa.generaterDfa();
-		Parser p = new Parser("a|bd|wa");
-		p.resolveAST();
+//		Parser p = new Parser("a|bd|wa");
+//		p.resolveAST();
+		Re re = new Re();
+		re.compile("ab");
+		System.out.println(re.match("ab"));
 	}
 	
 	/*test a|b

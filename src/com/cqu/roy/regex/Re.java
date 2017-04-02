@@ -28,4 +28,15 @@ public class Re {
 	public void compile(String re) {
 		
 	}
+	public boolean match() {
+		return true;
+	}
+	/**
+	 * ¸¨Öú±àÒë
+	 * @param ss
+	 */
+	private void com(String message){
+		Parser parser = new Parser(message);
+		
+	}
 }

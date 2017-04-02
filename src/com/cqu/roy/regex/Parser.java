@@ -12,7 +12,7 @@ import com.cqu.roy.exception.UncertainException;
  * @date: 2017年3月26日  上午11:09:50
  * version:
  */
-public class Lexer {
+public class Parser {
 	private Stack<ASTNode> symbolStack;//符号栈
 	//*+?这三个符号优先级最高，不会进栈，而|和$后进栈的一定大于等于先进栈的优先级
 	private Stack<ASTNode> astNodeStack;//语法树结点栈
@@ -21,7 +21,7 @@ public class Lexer {
 			+ "QWERTYUIOPLKJHGFDSAZXCVBNM1234567890";
 	private final static int CHARSTATE = 1;
 	private final static int SYMBOLSTATE = 2;
-	public Lexer(String message) {
+	public Parser(String message) {
 		// TODO Auto-generated constructor stub
 		this.message = message;
 		symbolStack = new Stack<>();

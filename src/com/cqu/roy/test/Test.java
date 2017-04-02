@@ -1,7 +1,7 @@
 package com.cqu.roy.test;
 
 import com.cqu.roy.regex.Dfa;
-import com.cqu.roy.regex.Lexer;
+import com.cqu.roy.regex.Parser;
 import com.cqu.roy.regex.Nfa;
 
 public class Test {
@@ -13,8 +13,8 @@ public class Test {
 //		Dfa dfa = new Dfa(nfa);
 //		System.out.println(nfa.match_("ab"));
 //		dfa.generaterDfa();
-		Lexer lexer = new Lexer("a*b|a*");
-		lexer.resolveAST();
+		Parser p = new Parser("a|bd|wa");
+		p.resolveAST();
 	}
 	
 	/*test a|b

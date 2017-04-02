@@ -1,5 +1,7 @@
 package com.cqu.roy.regex;
 
+import java.util.Stack;
+
 /**
  * 解析正则表达式，构建nfa 及nfa转dfa
  * @author Roy
@@ -14,7 +16,8 @@ public class Re {
 	}
 	public Re(String regex) {
 		// TODO Auto-generated constructor stub
-		this.regex = regex;
+		//语法树解析反了。。。。蠢了。。。将传进来的参数reverse一下再编译
+		this.regex = reverse(regex);
 	}
 	/**
 	 * 非传参编译
@@ -27,7 +30,7 @@ public class Re {
 	 * @param re
 	 */
 	public void compile(String re) {
-		com(re);
+		com(reverse(re));
 	}
 	public boolean match(String target) {
 		return node.getNfa().match_(target);
@@ -52,14 +55,33 @@ public class Re {
 		generateNFA(root.getRightChild());
 		if (!root.getIsLeaf()) {
 			if (root.getToken().getCharacter() == '$') {
-				Nfa nfa = root.getLeftChild().getNfa();
-				nfa.connect(root.getRightChild().getNfa());
-				root.setNfa(nfa);
+				//使用拷贝构造函数生成新的nfa，这用在进行构造时候不会改变 结点中的nfa
+				Nfa nfa_left = new Nfa(root.getLeftChild().getNfa());
+				Nfa nfa_right = new Nfa(root.getRightChild().getNfa());
+				nfa_left.connect(nfa_right);
+				
+				//System.out.println(root.getRightChild().getNfa());
+				root.setNfa(nfa_left);
 			}else if (root.getToken().getCharacter() == '|') {
-				Nfa nfa = root.getLeftChild().getNfa();
-				nfa.and(root.getRightChild().getNfa());
-				root.setNfa(nfa);
+				//使用拷贝构造函数生成新的nfa，这用在进行构造时候不会改变 结点中的nfa
+				Nfa nfa_left = new Nfa(root.getLeftChild().getNfa());
+				Nfa nfa_right = new Nfa(root.getRightChild().getNfa());
+				nfa_left.and(nfa_right);
+				
+				//System.out.println(root.getRightChild().getNfa());
+				root.setNfa(nfa_left);
 			}
 		}
+	}
+	private String reverse(String message){
+		Stack<Character> stack = new Stack<>();
+		for(int i = 0; i < message.length();i++){
+			stack.add(message.charAt(i));
+		}
+		String str = "";
+		while(!stack.isEmpty()){
+			str += stack.pop();
+		}
+		return str;
 	}
 }

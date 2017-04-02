@@ -57,13 +57,13 @@ public class Parser {
 		if (root == null) {
 			return;
 		}
-		if (root.getLeftChild() != null && root.getLeftChild().getRootNode() != null) {
-			root.setLeftChild(root.getLeftChild().getRootNode());
-			TreeOpen(root.getLeftChild());
-		}
 		if (root.getRightChild() != null && root.getRightChild().getRootNode() != null) {
 			root.setRightChild(root.getRightChild().getRootNode());
 			TreeOpen(root.getRightChild());
+		}
+		if (root.getLeftChild() != null && root.getLeftChild().getRootNode() != null) {
+			root.setLeftChild(root.getLeftChild().getRootNode());
+			TreeOpen(root.getLeftChild());
 		}
 	}
 	/**

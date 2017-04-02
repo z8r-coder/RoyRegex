@@ -25,8 +25,8 @@ public class ASTNode {
 			nfa.addNodeToNfa("start");
 			nfa.addStart("start");
 			nfa.addNodeToNfa("end");
-			nfa.addEnd("end");			
-			nfa.getStart().addMoveState('a', nfa.getNode("end"));
+			nfa.addEnd("end");
+			nfa.getStart().addMoveState(token.getCharacter(), nfa.getNode("end"));
 		}
 	}
 	

@@ -16,9 +16,11 @@ public class Test {
 //		dfa.generaterDfa();
 //		Parser p = new Parser("a|bd|wa");
 //		p.resolveAST();
+//		Nfa nfa = test_case();
+//		System.out.println(nfa.match_("ab"));
 		Re re = new Re();
-		re.compile("ab");
-		System.out.println(re.match("ab"));
+		re.compile("a|b");
+		System.out.println(re.match(""));
 	}
 	
 	/*test a|b
@@ -43,7 +45,7 @@ public class Test {
 		
 		nfa1.connect(nfa2);
 //		nfa1.and(nfa2);
-		nfa1.closure_2();
+//		nfa1.closure_2();
 		return nfa1;
 	}
 }

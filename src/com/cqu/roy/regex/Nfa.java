@@ -19,7 +19,13 @@ public class Nfa {
 		// TODO Auto-generated constructor stub
 		nfa = new ArrayList<>();
 	}
-
+	/**
+	 * 拷贝构造函数
+	 * @param nn
+	 */
+	public Nfa(Nfa nn) {
+		nfa = new ArrayList<>(nn.getNfaSet());
+	}
 	/*
 	 * @s 将状态s的节点设置为初始节点
 	 */

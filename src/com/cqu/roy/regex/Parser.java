@@ -29,9 +29,9 @@ public class Parser {
 	}
 	
 	/**
-	 * 解析语法树
+	 * 解析语法树,并返回这颗树
 	 */
-	public void resolveAST() {
+	public ASTNode resolveAST() {
 		try {
 			buildASTree();
 		} catch (NodeExistException e) {
@@ -42,11 +42,12 @@ public class Parser {
 			e.printStackTrace();
 		}
 		if (astNodeStack.size() == 0) {
-			return;
+			return null;
 		}
 		ASTNode root = astNodeStack.pop().getRootNode();
 		TreeOpen(root);
-		InTravel(root);
+		//InTravel(root);
+		return root;
 	}
 	/**
 	 * 将被包裹在ASTNode中的tree展开
@@ -95,7 +96,7 @@ public class Parser {
 			if (message.charAt(i) == '(') {
 				//栈中存在左括号
 				left_parenthese++;
-				symbolStack.push(new ASTNode(new Token('(', true, false), null, null));
+				symbolStack.push(new ASTNode(new Token('(', true, false), null, null,false));
 			}else if (message.charAt(i) == ')') {
 				if (left_parenthese > 0) {//若存在左括号，
 					/**
@@ -124,7 +125,7 @@ public class Parser {
 								ASTNode rightNode = astNodeStack.pop();
 								//符号打包成结点
 								ASTNode an = new ASTNode(new Token(c, 
-										true, false), null, null);
+										true, false), null, null,false);
 								//包裹结点
 								ASTNode newTree = PackASTNode(an, leftNode, rightNode);
 								//然后将新生成的节点树压入
@@ -144,7 +145,7 @@ public class Parser {
 				//若此时符号栈中元素为空，则直接压栈，不直接后面的内容,|优先级最低，底部结合
 				if (symbolStack.size() == 0) {
 					ASTNode symNode = new ASTNode(new Token('|', true, false)
-							, null, null);
+							, null, null,false);
 					symbolStack.push(symNode);
 					continue;
 				}
@@ -163,16 +164,16 @@ public class Parser {
 						astNodeStack.push(newTree);
 						//再向符号栈中压入|
 						ASTNode andNode = new ASTNode(new Token(message.charAt(i)
-								, true, false), null, null);
+								, true, false), null, null,false);
 						symbolStack.push(andNode);
 					}
 				}
 				else if (c == '(') {
 					//若栈中只有(则直接压入|就行了
 					ASTNode node2 = new ASTNode(new Token(message.charAt(i)
-							, true, false), null, null);
+							, true, false), null, null,false);
 					ASTNode leftBra = new ASTNode(new Token('(',
-							true, false), null, null);
+							true, false), null, null,false);
 					//将'('压栈
 					symbolStack.push(leftBra);
 					symbolStack.push(node2);
@@ -184,7 +185,7 @@ public class Parser {
 				if (symbolStack.size() == 0) {
 					//符号栈为空，则将'$'压栈，继续解析下一个字符
 					ASTNode astNode = new ASTNode(new Token('$', true, false)
-							, null, null);
+							, null, null,false);
 					symbolStack.push(astNode);
 					continue;
 				}
@@ -204,23 +205,23 @@ public class Parser {
 					astNodeStack.push(newTree);
 					//并将message.charAt(i)打包成符号结点放入符号栈中
 					ASTNode sNode = new ASTNode(new Token(message.charAt(i)
-							, true, false), null, null);
+							, true, false), null, null,false);
 					symbolStack.push(sNode);
 				}else if (c == '|' || c == '(') {
 					//栈中存在是|,此时不能右结合，因为不知后面的操作符优先级情况
 					//所以只能将$打包，压入symStack中
 					//若只存在左括号，也是直接打包压入就OK了
 					ASTNode sNode = new ASTNode(new Token(message.charAt(i)
-							, true, false), null, null);
+							, true, false), null, null,false);
 					if (c == '(') {
 						//由于'('被弹出来了，还要重新压回去
 						ASTNode leftBra = new ASTNode(new Token('(', true, false),
-								null, null);
+								null, null,false);
 						symbolStack.push(leftBra);
 					}else {
 						//由于'|'被弹出来了，需要重新压回去
 						ASTNode and = new ASTNode(new Token('|', true, false),
-								null, null);
+								null, null,false);
 						symbolStack.push(and);
 					}
 					symbolStack.push(sNode);
@@ -238,7 +239,7 @@ public class Parser {
 				}
 				ASTNode charNode = astNodeStack.pop();
 				ASTNode symbolNode = new ASTNode(new Token(message.charAt(i),
-						true, false), null, null);
+						true, false), null, null,false);
 				//将整颗树包装成一个node结点
 				ASTNode newTree = PackASTNode(symbolNode, charNode);
 				//压入结点栈
@@ -247,14 +248,14 @@ public class Parser {
 			else {
 				//字符[a-zA-Z0-9]若ab连接，中间需要添加$
 				ASTNode astNode = new ASTNode(new Token(message.charAt(i)
-						, false, true), null, null);
+						, false, true), null, null,true);
 				//第i个元素是字符，判断第i + 1个元素是不是字符
 				try {
 					if (i + 1 < message.length() && 
 							getState(message.charAt(i + 1)) == CHARSTATE) {
 						//说明连续i和i+1都是字符，则需要朝symbolStack中push $ ASTNode
 						ASTNode symNode = new ASTNode(new Token('$', true, false),
-								null, null);
+								null, null,false);
 						symbolStack.push(symNode); 
 					}
 				} catch (UncertainException e) {
@@ -321,7 +322,7 @@ public class Parser {
 	private ASTNode PackASTNode(ASTNode symNode,ASTNode left,ASTNode right){
 		symNode.setLeftChild(left);
 		symNode.setRightChild(right);
-		ASTNode newTree = new ASTNode(null, null, null);
+		ASTNode newTree = new ASTNode(null, null, null,false);
 		newTree.setRootNode(symNode);
 		return newTree;
 	}
@@ -333,7 +334,7 @@ public class Parser {
 	 */
 	private ASTNode PackASTNode(ASTNode symNode, ASTNode left){
 		symNode.setLeftChild(left);
-		ASTNode newTree = new ASTNode(null, null, null);
+		ASTNode newTree = new ASTNode(null, null, null,false);
 		newTree.setRootNode(symNode);
 		return newTree;
 	}

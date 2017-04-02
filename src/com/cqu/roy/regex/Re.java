@@ -37,6 +37,11 @@ public class Re {
 	 */
 	private void com(String message){
 		Parser parser = new Parser(message);
+		//解析字符串，得到语法分析树
+		ASTNode root = parser.resolveAST();
+	}
+	
+	private void generateNFA(){
 		
 	}
 }

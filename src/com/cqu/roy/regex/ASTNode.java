@@ -11,11 +11,23 @@ public class ASTNode {
 	private Token token;
 	private ASTNode leftChild;
 	private ASTNode rightChild;
-	public ASTNode(Token token, ASTNode leftChild, ASTNode rightChild) {
+	private Nfa nfa;
+	private boolean isLeaf;
+	public ASTNode(Token token, ASTNode leftChild, ASTNode rightChild,boolean isLeaf) {
 		// TODO Auto-generated constructor stub
 		this.token = token;
 		this.leftChild = leftChild;
 		this.rightChild = rightChild;
+		nfa = new Nfa();
+		this.isLeaf = isLeaf;
+		//若是叶子结点，直接生成相应的NFA，字符start->end(c)
+		if (isLeaf) {
+			nfa.addNodeToNfa("start");
+			nfa.addStart("start");
+			nfa.addNodeToNfa("end");
+			nfa.addEnd("end");			
+			nfa.getStart().addMoveState('a', nfa.getNode("end"));
+		}
 	}
 	
 	public void setLeftChild(ASTNode leftNode) {
@@ -44,5 +56,17 @@ public class ASTNode {
 	}
 	public Token getToken() {
 		return token;
+	}
+	public void setIsLeaf(boolean isLeaf) {
+		this.isLeaf = isLeaf;
+	}
+	public boolean getIsLeaf() {
+		return isLeaf;
+	}
+	public void setNfa(Nfa nfa) {
+		this.nfa = nfa;
+	}
+	public Nfa getNfa() {
+		return nfa;
 	}
 }

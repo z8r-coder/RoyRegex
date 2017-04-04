@@ -2,6 +2,8 @@ package com.cqu.roy.regex;
 
 import java.util.Stack;
 
+import javax.swing.tree.TreeNode;
+
 /**
  * 解析正则表达式，构建nfa 及nfa转dfa
  * @author Roy
@@ -16,8 +18,7 @@ public class Re {
 	}
 	public Re(String regex) {
 		// TODO Auto-generated constructor stub
-		//语法树解析反了。。。。蠢了。。。将传进来的参数reverse一下再编译
-		this.regex = reverse(regex);
+		this.regex = regex;
 	}
 	/**
 	 * 非传参编译
@@ -30,7 +31,7 @@ public class Re {
 	 * @param re
 	 */
 	public void compile(String re) {
-		com(reverse(re));
+		com(re);
 	}
 	public boolean match(String target) {
 		//Dfa dfa = new Dfa(node.getNfa());
@@ -73,15 +74,21 @@ public class Re {
 			}
 		}
 	}
-	private String reverse(String message){
-		Stack<Character> stack = new Stack<>();
-		for(int i = 0; i < message.length();i++){
-			stack.add(message.charAt(i));
-		}
-		StringBuilder sb = new StringBuilder();
-		while(!stack.isEmpty()){
-			sb.append(stack.pop());
-		}
-		return sb.toString();
-	}
+
+	/**
+	 * 翻转字符串
+	 * @param message
+	 * @return
+	 */
+//	private String reverse(String message){
+//		Stack<Character> stack = new Stack<>();
+//		for(int i = 0; i < message.length();i++){
+//			stack.add(message.charAt(i));
+//		}
+//		StringBuilder sb = new StringBuilder();
+//		while(!stack.isEmpty()){
+//			sb.append(stack.pop());
+//		}
+//		return sb.toString();
+//	}
 }

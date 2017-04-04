@@ -1,9 +1,7 @@
 package com.cqu.roy.test;
 
-import com.cqu.roy.regex.Dfa;
-import com.cqu.roy.regex.Parser;
-import com.cqu.roy.regex.Re;
 import com.cqu.roy.regex.Nfa;
+import com.cqu.roy.regex.Re;
 
 public class Test {
 
@@ -19,9 +17,12 @@ public class Test {
 //		Nfa nfa = test_case();
 //		System.out.println(nfa.match_("ab"));
 		Re re = new Re();
-		re.compile("addsa|dwqqd|dwqqqdw|qwqe|ewq|qq");
+		//联接和或运算符
+		//re.compile("addsa|dwqqd|dwqqqdw|qwqe|ewq|qq");
+		//测试括号运算符
+		re.compile("(addsa)|ad|Dwq|(dqwa|dd)");
 		System.out.println();
-		System.out.println(re.match("dwqqd"));
+		System.out.println(re.match("Dwq"));
 	}
 	
 	/*test a|b

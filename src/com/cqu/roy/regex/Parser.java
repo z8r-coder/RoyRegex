@@ -45,10 +45,13 @@ public class Parser {
 			return null;
 		}
 		ASTNode root = astNodeStack.pop().getRootNode();
+		//展开树
 		TreeOpen(root);
-		PreTravel(root);
+		//翻转二叉树
+		InvertTree(root);
+		PreTravel(root);//先序遍历，debug使用
 		System.out.println();
-		InTravel(root);
+		InTravel(root);//中序遍历，debug使用
 		return root;
 	}
 	/**
@@ -68,6 +71,23 @@ public class Parser {
 			TreeOpen(root.getLeftChild());
 		}
 	}
+	/**
+	 * 由于解析语法树的时候弄反，所以此处翻转二叉树
+	 * @param root
+	 * @return
+	 */
+	public ASTNode InvertTree(ASTNode root) {
+		if (root == null) {
+			return null;
+		}
+		InvertTree(root.getLeftChild());
+		InvertTree(root.getRightChild());
+		ASTNode temp_node = root.getLeftChild();
+		root.setLeftChild(root.getRightChild());
+		root.setRightChild(temp_node);
+		return root;
+	}
+	
 	/**
 	 * 先序遍历
 	 * @param root
@@ -109,6 +129,7 @@ public class Parser {
 		for(int i = 0; i < message.length();i++){
 			if (message.charAt(i) == '(') {
 				//栈中存在左括号
+				System.out.println(1);
 				left_parenthese++;
 				symbolStack.push(new ASTNode(new Token('(', true, false), null, null,false));
 			}else if (message.charAt(i) == ')') {

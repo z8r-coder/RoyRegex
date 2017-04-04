@@ -93,7 +93,7 @@ public class Dfa {
 	 * @param nfaNodesSet 当前能接受input的nfa结点的状态的集合
 	 * @param dfaNode     当前dfaNode,传递来以便建立边
 	 */
-	public void SubsetConstruction(ArrayList<NfaNode> nfaNodesSet,
+	private void SubsetConstruction(ArrayList<NfaNode> nfaNodesSet,
 			DfaNode dfaNode) {
 		/**
 		 * 将需要的字符缓存起来
@@ -222,6 +222,7 @@ public class Dfa {
 	 * @param s
 	 */
 	public boolean match(String s) {
+		//generaterDfa();
 		DfaNode tmpNode = new DfaNode(getStart());
 		for(int i = 0; i < s.length();i++){
 			HashMap<Character, DfaNode> moveStateTable = tmpNode.getMoveTable();

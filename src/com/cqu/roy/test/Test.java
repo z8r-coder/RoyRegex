@@ -19,8 +19,9 @@ public class Test {
 //		Nfa nfa = test_case();
 //		System.out.println(nfa.match_("ab"));
 		Re re = new Re();
-		re.compile("a|b");
-		System.out.println(re.match(""));
+		re.compile("addsa|dwqqd|dwqqqdw|qwqe|ewq|qq");
+		System.out.println();
+		System.out.println(re.match("dwqqd"));
 	}
 	
 	/*test a|b

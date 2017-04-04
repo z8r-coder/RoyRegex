@@ -33,6 +33,8 @@ public class Re {
 		com(reverse(re));
 	}
 	public boolean match(String target) {
+		//Dfa dfa = new Dfa(node.getNfa());
+		
 		return node.getNfa().match_(target);
 	}
 	/**
@@ -60,15 +62,13 @@ public class Re {
 				Nfa nfa_right = new Nfa(root.getRightChild().getNfa());
 				nfa_left.connect(nfa_right);
 				
-				//System.out.println(root.getRightChild().getNfa());
 				root.setNfa(nfa_left);
 			}else if (root.getToken().getCharacter() == '|') {
 				//使用拷贝构造函数生成新的nfa，这用在进行构造时候不会改变 结点中的nfa
 				Nfa nfa_left = new Nfa(root.getLeftChild().getNfa());
 				Nfa nfa_right = new Nfa(root.getRightChild().getNfa());
 				nfa_left.and(nfa_right);
-				
-				//System.out.println(root.getRightChild().getNfa());
+		
 				root.setNfa(nfa_left);
 			}
 		}
@@ -78,10 +78,10 @@ public class Re {
 		for(int i = 0; i < message.length();i++){
 			stack.add(message.charAt(i));
 		}
-		String str = "";
+		StringBuilder sb = new StringBuilder();
 		while(!stack.isEmpty()){
-			str += stack.pop();
+			sb.append(stack.pop());
 		}
-		return str;
+		return sb.toString();
 	}
 }

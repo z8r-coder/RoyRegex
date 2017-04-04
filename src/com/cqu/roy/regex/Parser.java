@@ -46,7 +46,9 @@ public class Parser {
 		}
 		ASTNode root = astNodeStack.pop().getRootNode();
 		TreeOpen(root);
-		//InTravel(root);
+		PreTravel(root);
+		System.out.println();
+		InTravel(root);
 		return root;
 	}
 	/**
@@ -65,6 +67,18 @@ public class Parser {
 			root.setLeftChild(root.getLeftChild().getRootNode());
 			TreeOpen(root.getLeftChild());
 		}
+	}
+	/**
+	 * 先序遍历
+	 * @param root
+	 */
+	private void PreTravel(ASTNode root){
+		if (root == null) {
+			return;
+		}
+		System.out.print(root.getToken().getCharacter());
+		PreTravel(root.getLeftChild());
+		PreTravel(root.getRightChild());
 	}
 	/**
 	 * 中序遍历
@@ -249,21 +263,52 @@ public class Parser {
 				//字符[a-zA-Z0-9]若ab连接，中间需要添加$
 				ASTNode astNode = new ASTNode(new Token(message.charAt(i)
 						, false, true), null, null,true);
+				//必须提前加入栈中，因为若栈中存在$会与该字符结合
+				astNodeStack.push(astNode);
 				//第i个元素是字符，判断第i + 1个元素是不是字符
 				try {
 					if (i + 1 < message.length() && 
 							getState(message.charAt(i + 1)) == CHARSTATE) {
 						//说明连续i和i+1都是字符，则需要朝symbolStack中push $ ASTNode
-						ASTNode symNode = new ASTNode(new Token('$', true, false),
-								null, null,false);
-						symbolStack.push(symNode); 
+						//在push之前，需要检查其stack中符号的优先级
+						if (symbolStack.size() == 0) {
+							//若符号栈中为空，则直接压入
+							ASTNode symNode = new ASTNode(new Token('$', true, false),
+									null, null,false);
+							symbolStack.push(symNode); 
+						}else {
+							ASTNode sNode = symbolStack.pop();
+							char c = sNode.getToken().getCharacter();
+							if (c == '$') {
+								//若栈中的是连接符号，则需要左结合
+								if (astNodeStack.size() < 2) {
+									throw new NodeExistException(getClass().toString());
+								}
+								//生成左结合的结点，并将其压入栈中
+								ASTNode leftNode = astNodeStack.pop();
+								ASTNode rightNode = astNodeStack.pop();
+								ASTNode newTree = PackASTNode(sNode, leftNode, rightNode);
+								astNodeStack.push(newTree);
+								
+								//将$压入栈中
+								ASTNode node = new ASTNode(new Token('$',
+										true, false), null, null, false);
+								symbolStack.push(node);
+							}else if (c == '|' || c == '(') {
+								//将sNode压回栈中
+								symbolStack.push(sNode);
+								
+								//若栈中的是| 或 (符号，则直接压入符号
+								ASTNode node = new ASTNode(new Token('$',
+										true, false), null, null, false);
+								symbolStack.push(node);
+							}
+						}
 					}
 				} catch (UncertainException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				astNodeStack.push(astNode);
-				
 			}
 		}
 		//栈中有可能剩余元素,由于*?+三个符号根本不会进栈，
@@ -298,7 +343,8 @@ public class Parser {
 	 * @return
 	 */
 	public int getState(char c) throws UncertainException{
-		String charSeq = "123456789qwertyuiopasdfghjklzxcvbnm";
+		String charSeq = "qwertyuioplkjhgfdsazxcvbnm"
+			+ "QWERTYUIOPLKJHGFDSAZXCVBNM1234567890";
 		String symbolSeq = "$*?+|()";
 		for(int i = 0; i < charSeq.length();i++){
 			if (charSeq.charAt(i) == c) {

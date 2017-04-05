@@ -316,6 +316,50 @@ public class Parser {
 				ASTNode newTree = PackASTNode(symbolNode, charNode);
 				//压入结点栈
 				astNodeStack.push(newTree);
+				
+				try {
+					//若出现类似M*N的情况则需要在M*被打包后再次压入$
+					if (i + 1 < message.length() &&
+							getState(message.charAt(i + 1)) == CHARSTATE) {
+						//检查stack中符号的优先级
+						if (symbolStack.size() == 0) {
+							//若符号栈中为空，则直接压入
+							ASTNode symNode = new ASTNode(new Token('$',
+									true, false), null, null, false);
+							symbolStack.push(symNode);
+						}else {
+							ASTNode sNode = symbolStack.pop();
+							char c = sNode.getToken().getCharacter();
+							if (c == '$') {
+								//左结合
+								if (astNodeStack.size() < 2) {
+									throw new NodeExistException(getClass().toString());
+								}
+								ASTNode leftNode = astNodeStack.pop();
+								ASTNode rightNode = astNodeStack.pop();
+								ASTNode nTree = PackASTNode(sNode, leftNode, rightNode);
+								
+								astNodeStack.push(nTree);
+								
+								//将$压入栈中
+								ASTNode connNode = new ASTNode(new Token('$',
+										true, false), null, null, false);
+								symbolStack.push(connNode);
+							}else if (c == '|' || c == '(') {
+								//将sNode压回栈中
+								symbolStack.push(sNode);
+								
+								//将$压入栈中
+								ASTNode connNode = new ASTNode(new Token('$',
+										true, false), null, null, false);
+								symbolStack.push(connNode);
+							}
+						}
+					}
+				} catch (UncertainException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}else {
 				//字符[a-zA-Z0-9]若ab连接，中间需要添加$
 				ASTNode astNode = new ASTNode(new Token(message.charAt(i)
@@ -436,7 +480,8 @@ public class Parser {
 	 * @return
 	 */
 	private ASTNode PackASTNode(ASTNode symNode, ASTNode left){
-		symNode.setLeftChild(left);
+		//由于后面需要，翻转二叉树，所以我们将结点放在右边
+		symNode.setRightChild(left);
 		ASTNode newTree = new ASTNode(null, null, null,false);
 		newTree.setRootNode(symNode);
 		return newTree;

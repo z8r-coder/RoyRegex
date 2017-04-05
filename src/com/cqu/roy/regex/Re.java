@@ -31,7 +31,6 @@ public class Re {
 	}
 	public boolean match(String target) {
 		//Dfa dfa = new Dfa(node.getNfa());
-		
 		return node.getNfa().match_(target);
 	}
 	/**
@@ -66,6 +65,23 @@ public class Re {
 				Nfa nfa_right = new Nfa(root.getRightChild().getNfa());
 				nfa_left.and(nfa_right);
 		
+				root.setNfa(nfa_left);
+			}else if (root.getToken().getCharacter() == '*') {
+				//由于翻转二叉树后，字符结点变成右儿子
+				Nfa nfa_left = new Nfa(root.getLeftChild().getNfa());
+				nfa_left.closure_1();
+				
+				root.setNfa(nfa_left);
+			}else if (root.getToken().getCharacter() == '+') {
+				Nfa nfa_left = new Nfa(root.getLeftChild().getNfa());
+				nfa_left.closure_2();
+				
+				root.setNfa(nfa_left);
+				
+			}else if (root.getToken().getCharacter() == '?') {
+				Nfa nfa_left = new Nfa(root.getLeftChild().getNfa());
+				nfa_left.closure_3();
+				
 				root.setNfa(nfa_left);
 			}
 		}

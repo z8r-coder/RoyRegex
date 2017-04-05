@@ -20,10 +20,12 @@ public class Test {
 		//联接和或运算符
 		//re.compile("addsa|dwqqd|dwqqqdw|qwqe|ewq|qq");
 		//测试括号运算符
-		re.compile("a(addsadsa)a|Dwq|a(dqwa)aa");
+		//re.compile("a(addsadsa)a|Dwq|a(dqwa)aa");
 		//re.compile("a(addsa)a");
+		//测试闭包运算*+?
+		re.compile("(a+)a");
 		System.out.println();
-		System.out.println(re.match("adqwaaa"));
+		System.out.println(re.match("aaaa"));
 	}
 	
 	/*test a|b

@@ -109,7 +109,6 @@ public class Parser {
 			return;
 		}
 		InTravel(root.getLeftChild());
-		//System.out.println(root.getLeftChild());
 		System.out.print(root.getToken().getCharacter());
 		InTravel(root.getRightChild());
 	}
@@ -196,7 +195,6 @@ public class Parser {
 											ASTNode ssode = new ASTNode(new Token('$', 
 													true, false), null, null, false);
 											symbolStack.push(ssode);
-											System.out.println(symbolStack.size());
 										}else if (c == '(' || c == '|') {
 											//先将nnode压回去
 											symbolStack.push(nnode);
@@ -205,7 +203,6 @@ public class Parser {
 											ASTNode ssode = new ASTNode(new Token('$',
 													true, false), null, null, false);
 											symbolStack.push(ssode);
-											//System.out.println(symbolStack.size());
 										}
 									}
 								}
@@ -364,6 +361,8 @@ public class Parser {
 				//字符[a-zA-Z0-9]若ab连接，中间需要添加$
 				ASTNode astNode = new ASTNode(new Token(message.charAt(i)
 						, false, true), null, null,true);
+				//但只有一个字符的时候，需要将自己设置成根结点
+				astNode.setRootNode(astNode);
 				//必须提前加入栈中，因为若栈中存在$会与该字符结合
 				astNodeStack.push(astNode);
 				//第i个元素是字符，判断第i + 1个元素是不是字符

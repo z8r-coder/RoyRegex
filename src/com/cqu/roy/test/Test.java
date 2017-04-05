@@ -20,9 +20,10 @@ public class Test {
 		//联接和或运算符
 		//re.compile("addsa|dwqqd|dwqqqdw|qwqe|ewq|qq");
 		//测试括号运算符
-		re.compile("(addsa)|ad|Dwq|(dqwa|dd)");
+		re.compile("a(addsadsa)a|Dwq|a(dqwa)aa");
+		//re.compile("a(addsa)a");
 		System.out.println();
-		System.out.println(re.match("Dwq"));
+		System.out.println(re.match("adqwaaa"));
 	}
 	
 	/*test a|b

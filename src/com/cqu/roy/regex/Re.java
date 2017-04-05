@@ -1,9 +1,5 @@
 package com.cqu.roy.regex;
 
-import java.util.Stack;
-
-import javax.swing.tree.TreeNode;
-
 /**
  * 解析正则表达式，构建nfa 及nfa转dfa
  * @author Roy

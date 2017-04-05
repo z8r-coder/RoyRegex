@@ -129,9 +129,9 @@ public class Parser {
 		for(int i = 0; i < message.length();i++){
 			if (message.charAt(i) == '(') {
 				//栈中存在左括号
-				System.out.println(1);
 				left_parenthese++;
-				symbolStack.push(new ASTNode(new Token('(', true, false), null, null,false));
+				symbolStack.push(new ASTNode(new Token('(',
+						true, false), null, null,false));
 			}else if (message.charAt(i) == ')') {
 				if (left_parenthese > 0) {//若存在左括号，
 					/**
@@ -141,7 +141,6 @@ public class Parser {
 					 * (N)
 					 * (N-M)-代表二元运算符
 					 */
-					//System.out.println(symbolStack.size());
 					ASTNode symNode = symbolStack.pop();
 					Character c = symNode.getToken().getCharacter();
 					if (c == '(') {
@@ -153,8 +152,7 @@ public class Parser {
 						//M和N打包成结点
 						if (astNodeStack.size() < 2) {
 							throw new NodeExistException(getClass().toString());
-						}else {
-							
+						}else {							
 							while(c != '('){
 								ASTNode leftNode = astNodeStack.pop();
 								ASTNode rightNode = astNodeStack.pop();
@@ -167,6 +165,53 @@ public class Parser {
 								astNodeStack.push(newTree);
 								ASTNode tmp = symbolStack.pop();
 								c =  tmp.getToken().getCharacter();
+							}
+							//将括号中的打包成一个结点后，我们需要判断以下两种情况
+							//可能出现M)|N，如此，就不用向符号栈中添加$
+							//出现M)N，则需要要符号栈中添加$
+							try {
+								//需要向符号栈中添加$
+								if (i + 1 < message.length() && 
+										getState(message.charAt(i + 1)) == CHARSTATE) {
+									if (symbolStack.size() == 0) {
+										//栈大小为空，直接push进去
+										ASTNode ssode = new ASTNode(new Token('$',
+												true, false), null, null, false);
+										symbolStack.push(ssode);
+									}else {
+										//压栈之前，观察栈中符号的优先级
+										ASTNode nnode = symbolStack.pop();
+										char cc = nnode.getToken().getCharacter();
+										if (cc == '$') {
+											//左结合后，再压栈
+											if (astNodeStack.size() < 2) {
+												throw new NodeExistException(getClass().toString());
+											}
+											ASTNode leftNode = astNodeStack.pop();
+											ASTNode rightNode = astNodeStack.pop();
+											ASTNode newTree = PackASTNode(nnode, leftNode, rightNode);
+											astNodeStack.push(newTree);
+											
+											//将$压栈
+											ASTNode ssode = new ASTNode(new Token('$', 
+													true, false), null, null, false);
+											symbolStack.push(ssode);
+											System.out.println(symbolStack.size());
+										}else if (c == '(' || c == '|') {
+											//先将nnode压回去
+											symbolStack.push(nnode);
+											
+											//然后再将$打包压栈
+											ASTNode ssode = new ASTNode(new Token('$',
+													true, false), null, null, false);
+											symbolStack.push(ssode);
+											//System.out.println(symbolStack.size());
+										}
+									}
+								}
+							} catch (UncertainException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
 						}
 					}
@@ -248,17 +293,9 @@ public class Parser {
 					//若只存在左括号，也是直接打包压入就OK了
 					ASTNode sNode = new ASTNode(new Token(message.charAt(i)
 							, true, false), null, null,false);
-					if (c == '(') {
-						//由于'('被弹出来了，还要重新压回去
-						ASTNode leftBra = new ASTNode(new Token('(', true, false),
-								null, null,false);
-						symbolStack.push(leftBra);
-					}else {
-						//由于'|'被弹出来了，需要重新压回去
-						ASTNode and = new ASTNode(new Token('|', true, false),
-								null, null,false);
-						symbolStack.push(and);
-					}
+					//压入被弹出的符号
+					symbolStack.push(symNode);
+					//压入当前符号
 					symbolStack.push(sNode);
 				}else {
 					throw new NodeExistException(getClass().toString());
@@ -279,8 +316,7 @@ public class Parser {
 				ASTNode newTree = PackASTNode(symbolNode, charNode);
 				//压入结点栈
 				astNodeStack.push(newTree);
-			}	
-			else {
+			}else {
 				//字符[a-zA-Z0-9]若ab连接，中间需要添加$
 				ASTNode astNode = new ASTNode(new Token(message.charAt(i)
 						, false, true), null, null,true);
@@ -365,8 +401,8 @@ public class Parser {
 	 */
 	public int getState(char c) throws UncertainException{
 		String charSeq = "qwertyuioplkjhgfdsazxcvbnm"
-			+ "QWERTYUIOPLKJHGFDSAZXCVBNM1234567890";
-		String symbolSeq = "$*?+|()";
+			+ "QWERTYUIOPLKJHGFDSAZXCVBNM1234567890(";
+		String symbolSeq = "$*?+|)";
 		for(int i = 0; i < charSeq.length();i++){
 			if (charSeq.charAt(i) == c) {
 				return CHARSTATE;

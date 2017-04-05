@@ -1,5 +1,8 @@
 package com.cqu.roy.test;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.cqu.roy.regex.Nfa;
 import com.cqu.roy.regex.Re;
 
@@ -20,10 +23,10 @@ public class Test {
 		//联接和或运算符
 		//re.compile("addsa|dwqqd|dwqqqdw|qwqe|ewq|qq");
 		//测试括号运算符
-		re.compile("a(addsadsa)+a|Dwq|a(dqwa)aa|dsa*");
-		//re.compile("a(addsa)a");
+//		re.compile("a(addsadsa)+a|Dwq|a(dqwa)aa|dsa*");
+		re.compile("a(addsa)a");
 		//测试闭包运算*+?
-		//re.compile("a");
+		re.compile("a");
 		System.out.println();
 		System.out.println(re.match("d"));
 	}

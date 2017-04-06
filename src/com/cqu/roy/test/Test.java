@@ -1,8 +1,5 @@
 package com.cqu.roy.test;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.cqu.roy.regex.Nfa;
 import com.cqu.roy.regex.Re;
 
